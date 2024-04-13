@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:TaskManagementApp.ViewModels"
+             x:Class="TaskManagementApp.Pages.LoginPage"
+             x:DataType="viewmodels:LoginViewModel"
+             Title="LoginPage">
+
+    <ContentPage.BindingContext>
+        <viewmodels:LoginViewModel />
+    </ContentPage.BindingContext>
+
+    <VerticalStackLayout>
+        <Label 
+            Text="Sign in"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+
+        <Entry Placeholder="Login"
+               Text="{Binding Login, Mode=OneWayToSource}" />
+
+        <Entry Placeholder="Password"
+               Text="{Binding Password, Mode=OneWayToSource}"/>
+
+        <Button Text="Sign In"
+                Command="{Binding SignInCommand}"/>
+
+        <Button Text="Register"
+                Command="{Binding GoToRegisterCommand}"/>
+
+    </VerticalStackLayout>
+</ContentPage>
