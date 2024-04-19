@@ -1,6 +1,7 @@
+using System;
 using System.Windows.Input;
 
-namespace TaskManagementApp.Utils;
+namespace TaskManagementWin.Utils;
 
 public class RelayCommand : ICommand
 {
