@@ -1,9 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using TaskManagement.Infrastructure.ViewModels;
+using TaskManagementApp.Services;
+using TaskManagment.Infrastructure.Models;
+using TaskManagment.Infrastructure.Services;
+using TaskManagment.Infrastructure.ViewModels;
 
 namespace TaskManagementApp;
 
 public static class MauiProgram
 {
+    public static IServiceProvider Services { get; private set; }
+
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
@@ -13,9 +21,9 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            });
-
-        RegisterDependencies(builder);
+            })
+            .RegisterServices()
+            .RegisterViewModels();
 
 #if DEBUG
         builder.Logging.AddDebug();
@@ -28,10 +36,22 @@ public static class MauiProgram
         return app;
     }
 
-    private static void RegisterDependencies(MauiAppBuilder builder)
+    private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {
-        // TODO: specify dependencies
+        builder.Services
+            .AddSingleton<IAuthenticationService, AuthenticationService>()
+            .AddSingleton<INavigationService, NavigationService>()
+            .AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+
+        return builder;
     }
 
-    public static IServiceProvider Services { get; private set; }
+    private static MauiAppBuilder RegisterViewModels(this MauiAppBuilder builder)
+    {
+        builder.Services
+            .AddTransient<LoginViewModel>()
+            .AddTransient<RegisterViewModel>();
+
+        return builder;
+    }
 }
