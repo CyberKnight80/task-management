@@ -24,16 +24,22 @@ public class AuthenticationService : IAuthenticationService
     public Task<bool> LoginAsync(string username, string password,
         CancellationToken cancellationToken = default)
     {
-        var user = _users.FirstOrDefault(x => x.Key == username).Value;
+        User user = null;
+        IsAuthenticated = false;
 
-        if (user is null)
+        if (!_users.TryGetValue(username, out user))
         {
-            throw new NullReferenceException($"User wit username `{username}` is not exist");
+            throw new NullReferenceException($"User with username `{username}` is not exist");
         }
 
         var verifyResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
 
-        IsAuthenticated = user is not null && verifyResult is PasswordVerificationResult.Success;
+        if (verifyResult is not PasswordVerificationResult.Success)
+        {
+            throw new ArgumentOutOfRangeException($"Password is not correct");
+        }
+
+        IsAuthenticated = true;
 
         return Task.FromResult(IsAuthenticated);
     }
