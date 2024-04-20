@@ -1,48 +1,66 @@
 ﻿using System.Windows.Input;
 using TaskManagement.Infrastructure.Utils;
-using System.Windows;
+using TaskManagment.Infrastructure.Services;
 
 namespace TaskManagement.Infrastructure.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
-        private string _status;
+        private readonly IAuthenticationService _authenticationManager;
+        private readonly INavigationService _navigationService;
 
-        public LoginViewModel()
+        private string _error;
+
+        public LoginViewModel(
+            IAuthenticationService authenticationManager,
+            INavigationService navigationService)
         {
-            SignInCommand = new RelayCommand(HandleSignIn);
-            SignUpCommand = new RelayCommand(HandleSignUp);
-            Status = "Enter your login and password";
+            _authenticationManager = authenticationManager;
+            _navigationService = navigationService;
+
+            LoginCommand = new RelayCommand(HandleLoginAsync);
+            RegisterCommand = new RelayCommand(HandleRegister);
         }
 
         public string Login { get; set; }
 
         public string Password { get; set; }
 
-        public string Status
+        public string Error
         {
-            get => _status;
-            set => SetField(ref _status, value);
+            get => _error;
+            set => SetField(ref _error, value);
         }
 
-        public ICommand SignInCommand { get; }
-        public ICommand SignUpCommand { get; }
+        public ICommand LoginCommand { get; }
 
-        private void HandleSignIn()
+        public ICommand RegisterCommand { get; }
+
+        private async Task HandleLoginAsync()
         {
-            if (Login is "test" && Password is "12345")
+            try
             {
-                Status = "Success: You're authorized";
+                var isAuthenticated =
+                    await _authenticationManager.LoginAsync(Login, Password);
+
+                if (isAuthenticated)
+                {
+                    Error = string.Empty;
+                    await _navigationService.GoToAsync(Route.Welcome, keepHistory: false);
+                }
             }
-            else
+            catch
             {
-                Status = "Failure: You're not authorized";
+                Error = "Authentication failed.\n" +
+                    "Please check your username and password and try again.";
             }
         }
 
-        private void HandleSignUp()
+        private Task HandleRegister()
         {
 
+            Error = string.Empty;
+            return _navigationService.GoToAsync(Route.Register);
         }
     }
 }

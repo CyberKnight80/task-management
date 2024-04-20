@@ -57,8 +57,13 @@
 
     <ItemGroup>
       <None Remove="Pages\" />
+      <None Remove="Services\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Pages\" />
+      <Folder Include="Services\" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\TaskManagment.Infrastructure\TaskManagment.Infrastructure.csproj" />
     </ItemGroup>
 </Project>
