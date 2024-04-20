@@ -47,7 +47,7 @@ public class RegisterViewModel : BaseViewModel
             if (isRegistered)
             {
                 Error = string.Empty;
-                await _navigationService.GoBackAsync();
+                await _navigationService.GoToAsync(Route.Login, keepHistory: false);
             }
         }
         catch

@@ -14,6 +14,9 @@ public class AuthenticationService : IAuthenticationService
     {
         _passwordHasher = passwordHasher;
         _users = new Dictionary<string, User>();
+
+        // for tests
+        Task.Run(() => RegisterAsync("Test", "12345"));
     }
 
     public bool IsAuthenticated { get; private set; }
