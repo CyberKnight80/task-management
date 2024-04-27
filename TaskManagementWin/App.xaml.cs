@@ -9,6 +9,7 @@ using TaskManagementWin.Pages;
 using TaskManagment.Infrastructure.Models;
 using TaskManagment.Infrastructure.Services;
 using TaskManagment.Infrastructure.ViewModels;
+using TaskManagment.Infrastructure.Database;
 
 namespace TaskManagementWin
 {
@@ -85,7 +86,8 @@ namespace TaskManagementWin
             services
                 .AddSingleton<IAuthenticationService, AuthenticationService>()
                 .AddSingleton<INavigationService, Services.NavigationService>()
-                .AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+                .AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>()
+                .AddDbContext<IDbContext, AppDbContext>(); // TODO: add implementation
 
             return services;
         }
