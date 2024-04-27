@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net7.0-android;net7.0-ios;net7.0-maccatalyst</TargetFrameworks>
+        <TargetFrameworks>net7.0-android;</TargetFrameworks>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
         <!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
@@ -58,10 +58,12 @@
     <ItemGroup>
       <None Remove="Pages\" />
       <None Remove="Services\" />
+      <None Remove="Platforms\Android\Resources\xml\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Pages\" />
       <Folder Include="Services\" />
+      <Folder Include="Platforms\Android\Resources\xml\" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\TaskManagment.Infrastructure\TaskManagment.Infrastructure.csproj" />

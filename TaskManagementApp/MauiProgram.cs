@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TaskManagement.Infrastructure.ViewModels;
 using TaskManagementApp.Services;
-using TaskManagment.Infrastructure.Models;
 using TaskManagment.Infrastructure.Services;
 using TaskManagment.Infrastructure.ViewModels;
 
@@ -39,9 +37,9 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {
         builder.Services
-            .AddSingleton<IAuthenticationService, AuthenticationService>()
             .AddSingleton<INavigationService, NavigationService>()
-            .AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+            .AddSingleton<ApiClientService>()
+            .AddHttpClient();
 
         return builder;
     }

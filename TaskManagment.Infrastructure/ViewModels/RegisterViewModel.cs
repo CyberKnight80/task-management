@@ -7,17 +7,17 @@ namespace TaskManagment.Infrastructure.ViewModels;
 
 public class RegisterViewModel : BaseViewModel
 {
-    private readonly IAuthenticationService _authenticationManager;
     private readonly INavigationService _navigationService;
+    private readonly ApiClientService _apiClientService;
 
     private string _error;
 
     public RegisterViewModel(
-        IAuthenticationService authenticationManager,
+        ApiClientService apiClientService,
         INavigationService navigationService)
     {
-        _authenticationManager = authenticationManager;
         _navigationService = navigationService;
+        _apiClientService = apiClientService;
 
         RegisterCommand = new RelayCommand(HandleRegister);
     }
@@ -41,7 +41,8 @@ public class RegisterViewModel : BaseViewModel
     {
         try
         {
-            var isRegistered = await _authenticationManager
+            
+            var isRegistered = await _apiClientService
                 .RegisterAsync(Login, Password);
 
             if (isRegistered)
@@ -50,9 +51,9 @@ public class RegisterViewModel : BaseViewModel
                 await _navigationService.GoToAsync(Route.Login, keepHistory: false);
             }
         }
-        catch
+        catch (Exception e)
         {
-            Error = "Please use another username to register";
+            Error = $"Please use another username to register.\n{e.Message}";
         }
     }
 }
