@@ -1,5 +1,5 @@
 ﻿
-namespace TaskManagment.Infrastructure.DataContracts;
+namespace TaskManagement.Infrastructure.DataContracts;
 
 public class ValidateTokenResponse
 {

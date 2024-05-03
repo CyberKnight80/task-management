@@ -1,4 +1,5 @@
-﻿namespace TaskManagment.Infrastructure.Services;
+﻿
+namespace TaskManagement.Infrastructure.Services;
 
 public interface IAuthenticationService
 {

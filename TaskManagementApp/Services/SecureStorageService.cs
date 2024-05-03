@@ -1,4 +1,4 @@
-﻿using TaskManagment.Infrastructure.Services;
+﻿using TaskManagement.Infrastructure.Services;
 
 namespace TaskManagementApp.Services;
 

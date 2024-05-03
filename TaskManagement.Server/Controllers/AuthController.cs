@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Server.Models;
 using TaskManagement.Server.Services;
-using TaskManagment.Infrastructure.DataContracts;
+using TaskManagement.Infrastructure.DataContracts;
 
 namespace TaskManagement.Server.Controllers;
 

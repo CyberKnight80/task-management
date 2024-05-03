@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using TaskManagement.Infrastructure.Services;
 
-namespace TaskManagementApp.Services;
+namespace TaskManagement.Infrastructure.Services;
 
 public class AuthenticationService : IAuthenticationService
 {

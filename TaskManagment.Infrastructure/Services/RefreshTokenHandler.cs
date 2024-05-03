@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 
-namespace TaskManagment.Infrastructure.Services;
+namespace TaskManagement.Infrastructure.Services;
 
 public class RefreshTokenHandler : DelegatingHandler
 {

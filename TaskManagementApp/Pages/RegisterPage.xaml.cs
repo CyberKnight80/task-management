@@ -1,4 +1,4 @@
-﻿using TaskManagment.Infrastructure.ViewModels;
+﻿using TaskManagement.Infrastructure.ViewModels;
 
 namespace TaskManagementApp.Pages;
 

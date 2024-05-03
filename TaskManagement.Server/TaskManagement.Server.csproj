@@ -30,7 +30,7 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TaskManagment.Infrastructure\TaskManagment.Infrastructure.csproj">
+    <ProjectReference Include="..\TaskManagment.Infrastructure\TaskManagement.Infrastructure.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>

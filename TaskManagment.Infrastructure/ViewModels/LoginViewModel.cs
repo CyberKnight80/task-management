@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 using TaskManagement.Infrastructure.Utils;
-using TaskManagment.Infrastructure.Services;
+using TaskManagement.Infrastructure.Services;
 
 namespace TaskManagement.Infrastructure.ViewModels
 {

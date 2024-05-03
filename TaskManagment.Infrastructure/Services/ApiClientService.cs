@@ -1,9 +1,9 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using TaskManagment.Infrastructure.DataContracts;
+using TaskManagement.Infrastructure.DataContracts;
 
-namespace TaskManagment.Infrastructure.Services;
+namespace TaskManagement.Infrastructure.Services;
 
 public class ApiClientService
 {

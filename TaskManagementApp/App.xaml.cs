@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TaskManagment.Infrastructure.Services;
+using TaskManagement.Infrastructure.Services;
 
 namespace TaskManagementApp;
 
