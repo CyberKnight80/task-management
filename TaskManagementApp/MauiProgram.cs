@@ -2,6 +2,7 @@
 using TaskManagement.Infrastructure.ViewModels;
 using TaskManagementApp.Services;
 using TaskManagement.Infrastructure.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TaskManagementApp;
 
@@ -40,7 +41,12 @@ public static class MauiProgram
             .AddSingleton<ISecureStorageService, SecureStorageService>()
             .AddSingleton<IAuthenticationService, TaskManagement.Infrastructure.Services.AuthenticationService>()
             .AddSingleton<RefreshTokenHandler>()
-            .AddSingleton<ApiClientService>()
+            .AddSingleton<ApiClientService>(provider =>
+            {
+                var logger = provider.GetRequiredService<ILogger<ApiClientService>>();
+                var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+                return new (logger, httpClientFactory, "http://10.0.2.2:5223");
+            })
             .AddHttpClient();
 
         builder.Services

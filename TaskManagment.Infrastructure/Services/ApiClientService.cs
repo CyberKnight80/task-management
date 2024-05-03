@@ -8,17 +8,19 @@ namespace TaskManagement.Infrastructure.Services;
 public class ApiClientService
 {
     public const string AutorizedHttpClient = "AutorizedHttpClient";
-    //private const string AuthEndpoint = "http://10.0.2.2:5223/api/auth";
-    private const string AuthEndpoint = "http://localhost:5223/api/auth";
 
     private readonly ILogger<ApiClientService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly string _serverAddress;
 
     public ApiClientService(ILogger<ApiClientService> logger,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        string serverAddress)
     {
         _logger = logger;
         _httpClientFactory = httpClientFactory;
+        _serverAddress = $"{serverAddress}/api";
+
     }
 
     public async Task<LoginResponse> LoginAsync(string username, string password,
@@ -26,7 +28,7 @@ public class ApiClientService
     {
         var response = await _httpClientFactory
             .CreateClient()
-            .PostAsJsonAsync($"{AuthEndpoint}/login", new LoginRequest
+            .PostAsJsonAsync($"{_serverAddress}/auth/login", new LoginRequest
                 {
                     Username = username,
                     Password = password
@@ -59,7 +61,7 @@ public class ApiClientService
     {
         var response = await _httpClientFactory
             .CreateClient()
-            .PostAsJsonAsync($"{AuthEndpoint}/register", new RegisterRequest
+            .PostAsJsonAsync($"{_serverAddress}/auth/register", new RegisterRequest
                 {
                     Username = username,
                     Password = password
@@ -81,7 +83,7 @@ public class ApiClientService
     {
         var response = await _httpClientFactory
             .CreateClient()
-            .PostAsJsonAsync($"{AuthEndpoint}/refresh-token", new RefreshTokenRequest
+            .PostAsJsonAsync($"{_serverAddress}/auth/refresh-token", new RefreshTokenRequest
                 {
                     AccessToken = accessToken,
                     RefreshToken = refreshToken
@@ -114,29 +116,12 @@ public class ApiClientService
     {
         var response = await _httpClientFactory
             .CreateClient(AutorizedHttpClient)
-            .GetAsync($"{AuthEndpoint}/validate-token", cancellationToken);
+            .GetAsync($"{_serverAddress}/auth/validate-token", cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
             throw new HttpRequestException(
                 $"Validate token fails: {response.ReasonPhrase}", null,
-                response.StatusCode);
-        }
-
-        return true;
-    }
-
-    public async Task<bool> LogoutAsync(
-        CancellationToken cancellationToken = default)
-    {
-        var response = await _httpClientFactory
-            .CreateClient(AutorizedHttpClient)
-            .GetAsync($"{AuthEndpoint}/logout", cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new HttpRequestException(
-                $"Logout fails: {response.ReasonPhrase}", null,
                 response.StatusCode);
         }
 
