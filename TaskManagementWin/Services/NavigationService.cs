@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using TaskManagementWin.Pages;
-using TaskManagment.Infrastructure.Services;
+using TaskManagement.Infrastructure.Services;
 
 namespace TaskManagementWin.Services
 {

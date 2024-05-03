@@ -8,8 +8,8 @@ namespace TaskManagement.Infrastructure.Services;
 public class ApiClientService
 {
     public const string AutorizedHttpClient = "AutorizedHttpClient";
-    private const string AuthEndpoint = "http://10.0.2.2:5223/api/auth";
-    //private const string AuthEndpoint = "http://localhost:5223/api/auth"; 
+    //private const string AuthEndpoint = "http://10.0.2.2:5223/api/auth";
+    private const string AuthEndpoint = "http://localhost:5223/api/auth";
 
     private readonly ILogger<ApiClientService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
