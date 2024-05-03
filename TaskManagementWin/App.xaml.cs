@@ -8,6 +8,8 @@ using TaskManagement.Infrastructure.ViewModels;
 using TaskManagement.Infrastructure.Services;
 using TaskManagementWin.Services;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using System.Net.Http;
 
 namespace TaskManagementWin
 {
@@ -89,7 +91,12 @@ namespace TaskManagementWin
                 .AddSingleton<ISecureStorageService, SecureStorageService>()
                 .AddSingleton<IAuthenticationService, AuthenticationService>()
                 .AddSingleton<RefreshTokenHandler>()
-                .AddSingleton<ApiClientService>()
+                .AddSingleton<ApiClientService>(provider =>
+                {
+                    var logger = provider.GetRequiredService<ILogger<ApiClientService>>();
+                    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+                    return new ApiClientService(logger, httpClientFactory, "http://localhost:5223");
+                })
                 .AddHttpClient();
 
             services.AddHttpClient(ApiClientService.AutorizedHttpClient)
