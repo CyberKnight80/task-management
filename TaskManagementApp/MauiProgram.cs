@@ -38,8 +38,15 @@ public static class MauiProgram
     {
         builder.Services
             .AddSingleton<INavigationService, NavigationService>()
+            .AddSingleton<ISecureStorageService, SecureStorageService>()
+            .AddSingleton<IAuthenticationService, AuthenticationService>()
+            .AddSingleton<RefreshTokenHandler>()
             .AddSingleton<ApiClientService>()
             .AddHttpClient();
+
+        builder.Services
+            .AddHttpClient(ApiClientService.AutorizedHttpClient)
+                .AddHttpMessageHandler<RefreshTokenHandler>();
 
         return builder;
     }
@@ -53,3 +60,4 @@ public static class MauiProgram
         return builder;
     }
 }
+

@@ -1,0 +1,21 @@
+﻿namespace TaskManagment.Infrastructure.Services;
+
+public interface ISecureStorageService
+{
+    Task SetAsync(SecureStorageKey key, string value);
+
+    Task<string> GetAsync(SecureStorageKey key);
+
+    Task RemoveAsync(SecureStorageKey key);
+
+    Task RemoveAll();
+}
+
+public enum SecureStorageKey
+{
+    AccessToken,
+    RefreshToken,
+    UserId,
+    Username,
+}
+

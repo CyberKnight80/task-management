@@ -1,7 +1,7 @@
 ﻿using System;
 namespace TaskManagment.Infrastructure.DataContracts;
 
-public class LoginModel
+public class RegisterRequest
 {
     public string Username { get; set; }
 

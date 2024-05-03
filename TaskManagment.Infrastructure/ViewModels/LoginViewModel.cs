@@ -7,16 +7,16 @@ namespace TaskManagement.Infrastructure.ViewModels
     public class LoginViewModel : BaseViewModel
     {
         private readonly INavigationService _navigationService;
-        private readonly ApiClientService _apiClientService;
+        private readonly IAuthenticationService _authenticationService;
 
         private string _error;
 
         public LoginViewModel(
-            ApiClientService apiClientService,
+            IAuthenticationService authenticationService,
             INavigationService navigationService)
         {
+            _authenticationService = authenticationService;
             _navigationService = navigationService;
-            _apiClientService = apiClientService;
 
             LoginCommand = new RelayCommand(HandleLoginAsync);
             RegisterCommand = new RelayCommand(HandleRegister);
@@ -40,12 +40,12 @@ namespace TaskManagement.Infrastructure.ViewModels
         {
             try
             {
-                var tokenResponse = await _apiClientService
-                    .LoginAsync(Login, Password);
 
-                if (tokenResponse is { AccessToken: not null, RefreshToken: not null })
+                var isAuthenticated = await _authenticationService
+                    .AuthenticateAsync(login: Login, password: Password);
+
+                if (isAuthenticated)
                 {
-                    // TODO: save tokens
                     Error = string.Empty;
                     await _navigationService.GoToAsync(Route.Welcome, keepHistory: false);
                 }

@@ -1,7 +1,6 @@
-﻿using System;
-namespace TaskManagement.Server.Models;
+﻿namespace TaskManagment.Infrastructure.DataContracts;
 
-public class RefreshTokenModel
+public class RefreshTokenRequest
 {
     public string AccessToken { get; set; }
 
