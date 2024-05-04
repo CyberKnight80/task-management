@@ -9,5 +9,7 @@ public interface IAuthenticationService
     Task<bool> CheckIsAuthenticatedAsync(CancellationToken cancellationToken = default);
 
     Task<bool> RefreshTokenAsync(CancellationToken cancellationToken = default);
+
+    Task<bool> LogoutAsync(CancellationToken cancellationToken = default);
 }
 

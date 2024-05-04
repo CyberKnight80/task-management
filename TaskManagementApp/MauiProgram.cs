@@ -60,7 +60,8 @@ public static class MauiProgram
     {
         builder.Services
             .AddTransient<LoginViewModel>()
-            .AddTransient<RegisterViewModel>();
+            .AddTransient<RegisterViewModel>()
+            .AddTransient<WelcomeViewModel>();
 
         return builder;
     }

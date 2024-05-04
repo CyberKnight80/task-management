@@ -80,5 +80,23 @@ public class AuthenticationService : IAuthenticationService
             return false;
         }
     }
+
+    public async Task<bool> LogoutAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _apiClientService.LogoutAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to logout");
+        }
+        finally
+        {
+            await _secureStorageService.RemoveAllAsync();
+        }
+
+        return true;
+    }
 }
 

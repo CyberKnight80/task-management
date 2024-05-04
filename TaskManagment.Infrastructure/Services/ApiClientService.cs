@@ -127,5 +127,22 @@ public class ApiClientService
 
         return true;
     }
+
+    public async Task<bool> LogoutAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClientFactory
+            .CreateClient(AutorizedHttpClient)
+            .GetAsync($"{_serverAddress}/auth/logout", cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(
+                $"Logout fails: {response.ReasonPhrase}", null,
+                response.StatusCode);
+        }
+
+        return true;
+    }
 }
 
