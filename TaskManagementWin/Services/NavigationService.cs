@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using TaskManagementWin.Pages;
 using TaskManagement.Infrastructure.Services;
+using System.Collections.Generic;
 
 namespace TaskManagementWin.Services;
 
@@ -26,7 +27,7 @@ internal class NavigationService : INavigationService
         return Task.CompletedTask;
     }
 
-    public Task GoToAsync(Route route, IDictionary<string, object> parameters, bool keepHistory = true)
+    public Task GoToAsync(Route route, IDictionary<string, object>? parameters = null, bool keepHistory = true)
     {
         if (!keepHistory)
         {
@@ -43,7 +44,7 @@ internal class NavigationService : INavigationService
     }
 
 #pragma warning disable CS8603 // Possible null reference return.
-    private Page MapRouteToPage(Route route, IDictionary<string, object> parameters) => route switch
+    private Page MapRouteToPage(Route route, IDictionary<string, object>? parameters = null) => route switch
     {
         Route.Login => new LoginPage(),
         Route.Register => new RegisterPage(),

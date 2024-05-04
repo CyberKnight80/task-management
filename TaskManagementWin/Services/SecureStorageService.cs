@@ -16,7 +16,7 @@ internal class SecureStorageService : ISecureStorageService
         return Task.FromResult(descryptedValue);
     }
 
-    public Task RemoveAll()
+    public Task RemoveAllAsync()
     {
         foreach (SettingsProperty prop in Properties.Settings.Default.Properties)
         {

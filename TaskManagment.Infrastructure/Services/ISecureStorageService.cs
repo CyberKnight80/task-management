@@ -9,7 +9,7 @@ public interface ISecureStorageService
 
     Task RemoveAsync(SecureStorageKey key);
 
-    Task RemoveAll();
+    Task RemoveAllAsync();
 }
 
 public enum SecureStorageKey
