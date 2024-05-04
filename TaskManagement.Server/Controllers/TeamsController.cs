@@ -114,6 +114,57 @@ public class TeamsController : ControllerBase
         return MapModelToContract(team);
     }
 
+    [HttpPost("{teamId}/users/{userId}")]
+    public async Task<ActionResult<GetTeamResponse>> AddUserToTeam(int teamId, int userId)
+    {
+        var team = await _context.Teams
+            .Include(t => t.Users)
+            .FirstOrDefaultAsync(t => t.Id == teamId);
+
+        if (team == null)
+        {
+            return NotFound($"Team with ID {teamId} not found.");
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return NotFound($"User with ID {userId} not found.");
+        }
+
+        if (!team.Users.Contains(user))
+        {
+            team.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
+        return Ok(MapModelToContract(team));
+    }
+
+    [HttpDelete("{teamId}/users/{userId}")]
+    public async Task<ActionResult<GetTeamResponse>> RemoveUserFromTeam(int teamId, int userId)
+    {
+        var team = await _context.Teams
+            .Include(t => t.Users)
+            .FirstOrDefaultAsync(t => t.Id == teamId);
+
+        if (team == null)
+        {
+            return NotFound($"Team with ID {teamId} not found.");
+        }
+
+        var user = team.Users.FirstOrDefault(u => u.Id == userId);
+        if (user == null)
+        {
+            return NotFound($"User with ID {userId} not found in team.");
+        }
+
+        team.Users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return Ok(MapModelToContract(team));
+    }
+
     private static GetTeamResponse MapModelToContract(Team team) =>
         new GetTeamResponse
         {
