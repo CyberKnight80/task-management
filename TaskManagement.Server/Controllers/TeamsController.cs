@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TaskManagement.Infrastructure.DataContracts;
 using TaskManagement.Server.Models;
 using TaskManagement.Server.Services;
 
@@ -20,16 +21,19 @@ public class TeamsController : ControllerBase
 
     // GET: api/Teams
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
+    public async Task<ActionResult<IEnumerable<GetTeamResponse>>> GetTeams()
     {
-        return await _context.Teams
-            .Select(t => new Team { Id = t.Id, Name = t.Name })
+        var teams = await _context.Teams
+            .Include(t => t.Users)
+            .Select(t => MapModelToContract(t))
             .ToListAsync();
+
+        return teams;
     }
 
     // GET: api/Teams/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Team>> GetTeam(int id)
+    public async Task<ActionResult<GetTeamResponse>> GetTeam(int id)
     {
         var team = await _context.Teams.FindAsync(id);
 
@@ -38,12 +42,12 @@ public class TeamsController : ControllerBase
             return NotFound();
         }
 
-        return team;
+        return MapModelToContract(team);
     }
 
     // POST: api/Teams
     [HttpPost]
-    public async Task<ActionResult<Team>> PostTeam(Team Team)
+    public async Task<ActionResult<GetTeamResponse>> PostTeam(Team Team)
     {
         if (_context.Teams.Any(t => t.Name == Team.Name))
         {
@@ -59,7 +63,7 @@ public class TeamsController : ControllerBase
 
     // PUT: api/Teams/5
     [HttpPut("{id}")]
-    public async Task<ActionResult<Team>> PutTeam(int id, Team Team)
+    public async Task<ActionResult<GetTeamResponse>> PutTeam(int id, Team Team)
     {
         if (id != Team.Id)
         {
@@ -91,12 +95,12 @@ public class TeamsController : ControllerBase
             }
         }
 
-        return team;
+        return MapModelToContract(team);
     }
 
     // DELETE: api/Teams/5
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Team>> DeleteTeam(int id)
+    public async Task<ActionResult<GetTeamResponse>> DeleteTeam(int id)
     {
         var team = await _context.Teams.FindAsync(id);
         if (team == null)
@@ -107,6 +111,18 @@ public class TeamsController : ControllerBase
         _context.Teams.Remove(team);
         await _context.SaveChangesAsync();
 
-        return team;
+        return MapModelToContract(team);
     }
+
+    private static GetTeamResponse MapModelToContract(Team team) =>
+        new GetTeamResponse
+        {
+            Id = team.Id,
+            Name = team.Name,
+            Users = team.Users.Select(u => new UserEntity
+            {
+                Id = u.Id,
+                Name = u.Username
+            })
+        };
 }
