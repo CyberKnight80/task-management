@@ -16,7 +16,7 @@ public class SecureStorageService : ISecureStorageService
     public Task SetAsync(SecureStorageKey key, string value) =>
         SecureStorage.SetAsync(key.ToString(), value);
 
-    public Task RemoveAll()
+    public Task RemoveAllAsync()
     {
         SecureStorage.RemoveAll();
         return Task.CompletedTask;
