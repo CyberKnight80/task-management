@@ -1,9 +1,9 @@
-﻿using System;
-namespace TaskManagement.Server.Models;
+﻿namespace TaskManagement.Infrastructure.DataContracts;
 
-public class RefreshTokenModel
+public class RefreshTokenResponse
 {
     public string AccessToken { get; set; }
 
     public string RefreshToken { get; set; }
 }
+

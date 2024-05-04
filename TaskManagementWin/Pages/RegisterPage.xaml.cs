@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
 using TaskManagement.Infrastructure.ViewModels;
-using TaskManagment.Infrastructure.ViewModels;
 
 namespace TaskManagementWin.Pages
 {

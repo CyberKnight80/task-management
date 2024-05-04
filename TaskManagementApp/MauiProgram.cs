@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using TaskManagement.Infrastructure.ViewModels;
 using TaskManagementApp.Services;
-using TaskManagment.Infrastructure.Services;
-using TaskManagment.Infrastructure.ViewModels;
+using TaskManagement.Infrastructure.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TaskManagementApp;
 
@@ -38,8 +38,20 @@ public static class MauiProgram
     {
         builder.Services
             .AddSingleton<INavigationService, NavigationService>()
-            .AddSingleton<ApiClientService>()
+            .AddSingleton<ISecureStorageService, SecureStorageService>()
+            .AddSingleton<IAuthenticationService, TaskManagement.Infrastructure.Services.AuthenticationService>()
+            .AddSingleton<RefreshTokenHandler>()
+            .AddSingleton<ApiClientService>(provider =>
+            {
+                var logger = provider.GetRequiredService<ILogger<ApiClientService>>();
+                var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+                return new (logger, httpClientFactory, "http://10.0.2.2:5223");
+            })
             .AddHttpClient();
+
+        builder.Services
+            .AddHttpClient(ApiClientService.AutorizedHttpClient)
+                .AddHttpMessageHandler<RefreshTokenHandler>();
 
         return builder;
     }
@@ -53,3 +65,4 @@ public static class MauiProgram
         return builder;
     }
 }
+

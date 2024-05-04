@@ -1,9 +1,8 @@
 ﻿using System.Windows.Input;
 using TaskManagement.Infrastructure.Utils;
-using TaskManagement.Infrastructure.ViewModels;
-using TaskManagment.Infrastructure.Services;
+using TaskManagement.Infrastructure.Services;
 
-namespace TaskManagment.Infrastructure.ViewModels;
+namespace TaskManagement.Infrastructure.ViewModels;
 
 public class RegisterViewModel : BaseViewModel
 {

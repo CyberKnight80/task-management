@@ -1,8 +1,11 @@
-﻿namespace TaskManagment.Infrastructure.Services;
+﻿
+namespace TaskManagement.Infrastructure.Services;
 
 public interface INavigationService
 {
-    Task GoToAsync(Route route, bool keepHistory = true);
+    Task GoToAsync(Route route, IDictionary<string, object>? parameters = null,
+        bool keepHistory = true);
+
     Task GoBackAsync();
 }
 

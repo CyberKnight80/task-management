@@ -66,6 +66,6 @@
       <Folder Include="Platforms\Android\Resources\xml\" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\TaskManagment.Infrastructure\TaskManagment.Infrastructure.csproj" />
+      <ProjectReference Include="..\TaskManagment.Infrastructure\TaskManagement.Infrastructure.csproj" />
     </ItemGroup>
 </Project>

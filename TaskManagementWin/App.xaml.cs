@@ -5,11 +5,11 @@ using System;
 using System.Windows;
 using System.Windows.Navigation;
 using TaskManagement.Infrastructure.ViewModels;
-using TaskManagementWin.Pages;
-using TaskManagment.Infrastructure.Models;
-using TaskManagment.Infrastructure.Services;
-using TaskManagment.Infrastructure.ViewModels;
-using TaskManagment.Infrastructure.Database;
+using TaskManagement.Infrastructure.Services;
+using TaskManagementWin.Services;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using System.Net.Http;
 
 namespace TaskManagementWin
 {
@@ -52,18 +52,7 @@ namespace TaskManagementWin
 
             MainWindow = navigationWidnow;
 
-            var navigationService = Services.GetRequiredService<INavigationService>();
-
-            var isAuthenticated = false;
-
-            if (isAuthenticated)
-            {
-                await navigationService.GoToAsync(Route.Welcome);
-            }
-            else
-            {
-                await navigationService.GoToAsync(Route.Login);
-            }
+            await SetStartupPageAsync();
 
             MainWindow.Show();
         }
@@ -77,6 +66,20 @@ namespace TaskManagementWin
 
             base.OnExit(e);
         }
+
+        private async Task SetStartupPageAsync()
+        {
+            var authenticationService = Services.GetRequiredService<IAuthenticationService>();
+            var navigationService = Services.GetRequiredService<INavigationService>();
+
+            var isAuthenticated = await authenticationService.CheckIsAuthenticatedAsync();
+
+            var startupRoute = isAuthenticated
+                ? Route.Welcome
+                : Route.Login;
+
+            await navigationService.GoToAsync(startupRoute, keepHistory: false);
+        }
     }
 
     static class AppExtensions
@@ -84,10 +87,20 @@ namespace TaskManagementWin
         internal static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services
-                .AddSingleton<IAuthenticationService, AuthenticationService>()
                 .AddSingleton<INavigationService, Services.NavigationService>()
-                .AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>()
-                .AddDbContext<IDbContext, AppDbContext>(); // TODO: add implementation
+                .AddSingleton<ISecureStorageService, SecureStorageService>()
+                .AddSingleton<IAuthenticationService, AuthenticationService>()
+                .AddSingleton<RefreshTokenHandler>()
+                .AddSingleton<ApiClientService>(provider =>
+                {
+                    var logger = provider.GetRequiredService<ILogger<ApiClientService>>();
+                    var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
+                    return new (logger, httpClientFactory, "http://localhost:5223");
+                })
+                .AddHttpClient();
+
+            services.AddHttpClient(ApiClientService.AutorizedHttpClient)
+                .AddHttpMessageHandler<RefreshTokenHandler>();
 
             return services;
         }

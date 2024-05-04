@@ -1,13 +1,22 @@
-﻿using TaskManagment.Infrastructure.Services;
+﻿using TaskManagement.Infrastructure.Services;
 
 namespace TaskManagementApp.Services;
 
 public class NavigationService : INavigationService
 {
-    public Task GoToAsync(Route route, bool keepHistory = true)
+    public Task GoToAsync(Route route, IDictionary<string, object> parameters, bool keepHistory = true)
     {
         var prefix = keepHistory ? "/" : "//";
         var routeS = $"{prefix}{route.MapRouteToPath()}";
+
+        if (parameters is not null)
+        {
+            foreach (var parameter in parameters)
+            {
+                routeS += $"?{parameter.Key}={parameter.Value}";
+            }
+        }
+
         return Shell.Current.GoToAsync(routeS);
     }
 

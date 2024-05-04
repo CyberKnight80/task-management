@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Server.Models;
 using TaskManagement.Server.Services;
-using TaskManagment.Infrastructure.DataContracts;
+using TaskManagement.Infrastructure.DataContracts;
 
 namespace TaskManagement.Server.Controllers;
 
@@ -25,13 +27,13 @@ public class AuthController : ControllerBase
 
     // POST api/auth/login
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginModel loginModel)
+    public IActionResult Login([FromBody] LoginRequest request)
     {
         // Проверяем учетные данные пользователя
-        var user = _context.Users.SingleOrDefault(u => u.Username == loginModel.Username);
+        var user = _context.Users.SingleOrDefault(u => u.Username == request.Username);
         if (user == null ||
             !_authService.VerifyPasswordHash(
-                loginModel.Password, user.PasswordHash, user.Salt))
+                request.Password, user.PasswordHash, user.Salt))
         {
             return Unauthorized("Invalid username or password.");
         }
@@ -47,23 +49,25 @@ public class AuthController : ControllerBase
         _context.SaveChanges();
 
         // Возвращаем токены клиенту
-        return Ok(new
+        return Ok(new LoginResponse
         {
             AccessToken = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken,
+            UserId = user.Id,
+            Username = user.Username
         });
     }
 
     // POST api/auth/refresh
-    [HttpPost("refresh")]
-    public IActionResult Refresh([FromBody] RefreshTokenModel refreshTokenModel)
+    [HttpPost("refresh-token")]
+    public IActionResult Refresh([FromBody] RefreshTokenRequest request)
     {
-        var principal = _authService.GetPrincipalFromExpiredToken(refreshTokenModel.AccessToken);
+        var principal = _authService.GetPrincipalFromExpiredToken(request.AccessToken);
         var username = principal.Identity.Name; // Извлекаем имя пользователя из принципала
         var user = _context.Users.SingleOrDefault(u => u.Username == username);
 
         // Проверяем валидность refresh токена
-        if (user == null || user.RefreshToken != refreshTokenModel.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        if (user == null || user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
         {
             return BadRequest("Invalid token.");
         }
@@ -78,7 +82,7 @@ public class AuthController : ControllerBase
         _context.SaveChanges();
 
         // Возвращаем новые токены клиенту
-        return Ok(new
+        return Ok(new RefreshTokenResponse
         {
             AccessToken = newAccessToken,
             RefreshToken = newRefreshToken
@@ -86,22 +90,22 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public IActionResult Register([FromBody] RegisterModel registerModel)
+    public IActionResult Register([FromBody] RegisterRequest request)
     {
         // Проверяем, существует ли уже пользователь с таким именем
-        if (_context.Users.Any(u => u.Username == registerModel.Username))
+        if (_context.Users.Any(u => u.Username == request.Username))
         {
             return BadRequest("Username already exists.");
         }
 
         // Создаем хеш пароля
-        _authService.CreatePasswordHash(registerModel.Password,
+        _authService.CreatePasswordHash(request.Password,
             out string passwordHash, out string passwordSalt);
 
         // Создаем нового пользователя
         var user = new User
         {
-            Username = registerModel.Username,
+            Username = request.Username,
             PasswordHash = passwordHash,
             Salt = passwordSalt
         };
@@ -111,6 +115,30 @@ public class AuthController : ControllerBase
         _context.SaveChanges();
 
         return Ok("User registered successfully.");
+    }
+
+    [Authorize]
+    [HttpGet("validate-token")]
+    public IActionResult ValidateToken()
+    {
+        if (HttpContext.User.Identity is ClaimsIdentity identity)
+        {
+            var username = identity.FindFirst(ClaimTypes.Name)?.Value;
+            var user = _context.Users.SingleOrDefault(u => u.Username == username);
+
+            if (user is null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(new ValidateTokenResponse()
+            {
+                UserId = user.Id,
+                Username = user.Username
+            });
+        }
+
+        return Unauthorized();
     }
 }
 

@@ -1,6 +1,6 @@
 ﻿using TaskManagementApp.Pages;
 using TaskManagementApp.Services;
-using TaskManagment.Infrastructure.Services;
+using TaskManagement.Infrastructure.Services;
 
 namespace TaskManagementApp;
 
