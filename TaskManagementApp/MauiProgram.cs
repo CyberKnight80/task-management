@@ -3,6 +3,7 @@ using TaskManagement.Infrastructure.ViewModels;
 using TaskManagementApp.Services;
 using TaskManagement.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using TaskManagementApp.ViewModels;
 
 namespace TaskManagementApp;
 

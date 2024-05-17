@@ -1,7 +1,7 @@
 ﻿using TaskManagementApp.Pages;
 using TaskManagementApp.Services;
 using TaskManagement.Infrastructure.Services;
-using TaskManagement.Infrastructure.ViewModels;
+using TaskManagementApp.ViewModels;
 
 namespace TaskManagementApp;
 

@@ -1,8 +1,9 @@
 ﻿using System.Windows.Input;
 using TaskManagement.Infrastructure.Services;
 using TaskManagement.Infrastructure.Utils;
+using TaskManagement.Infrastructure.ViewModels;
 
-namespace TaskManagement.Infrastructure.ViewModels;
+namespace TaskManagementApp.ViewModels;
 
 public class AppShellViewModel : BaseViewModel
 {
