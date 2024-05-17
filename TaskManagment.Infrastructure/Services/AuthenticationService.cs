@@ -4,9 +4,13 @@ namespace TaskManagement.Infrastructure.Services;
 
 public class AuthenticationService : IAuthenticationService
 {
+    public event EventHandler<bool> OnAuthenticationStateChanged;
+
     private readonly ILogger<AuthenticationService> _logger;
     private readonly ISecureStorageService _secureStorageService;
     private readonly ApiClientService _apiClientService;
+
+    private bool _isAuthenticated;
 
     public AuthenticationService(ILogger<AuthenticationService> logger,
         ISecureStorageService secureStorageService,
@@ -16,6 +20,21 @@ public class AuthenticationService : IAuthenticationService
         _secureStorageService = secureStorageService;
         _apiClientService = apiClientService;
     }
+
+    public bool IsAuthenticated
+    {
+        get => _isAuthenticated;
+        set
+        {
+            if (_isAuthenticated != value)
+            {
+                _isAuthenticated = value;
+                OnAuthenticationStateChanged?.Invoke(this, _isAuthenticated);
+            }
+        }
+    }
+
+    public int? UserId { get; private set; }
 
     public async Task<bool> AuthenticateAsync(string login, string password,
         CancellationToken cancellationToken = default)
@@ -33,13 +52,17 @@ public class AuthenticationService : IAuthenticationService
             await _secureStorageService.SetAsync(SecureStorageKey.UserId, response.UserId.ToString());
             await _secureStorageService.SetAsync(SecureStorageKey.Username, response.Username);
 
-            return true;
+            UserId = response.UserId;
+            IsAuthenticated = true;
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Failed to authenticate");
-            return false;
+            UserId = null;
+            IsAuthenticated = false;
         }
+
+        return IsAuthenticated;
     }
 
     public async Task<bool> CheckIsAuthenticatedAsync(CancellationToken cancellationToken = default)
@@ -47,13 +70,22 @@ public class AuthenticationService : IAuthenticationService
         try
         {
             await _apiClientService.ValidateTokenAsync(cancellationToken);
-            return true;
+            var rawUserId = await _secureStorageService.GetAsync(SecureStorageKey.UserId);
+
+            if (int.TryParse(rawUserId, out int userId))
+            {
+                UserId = userId;
+                IsAuthenticated = true;
+            }
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Failed to check for authentication status");
-            return false;
+            UserId = null;
+            IsAuthenticated = false;
         }
+
+        return IsAuthenticated;
     }
 
     public async Task<bool> RefreshTokenAsync(CancellationToken cancellationToken = default)
@@ -94,6 +126,8 @@ public class AuthenticationService : IAuthenticationService
         finally
         {
             await _secureStorageService.RemoveAllAsync();
+            UserId = null;
+            IsAuthenticated = false;
         }
 
         return true;

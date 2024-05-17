@@ -53,7 +53,6 @@ public class LoginViewModel : BaseViewModel
 
         try
         {
-
             isAuthenticated = await _authenticationService
                 .AuthenticateAsync(login: Login, password: Password);
 

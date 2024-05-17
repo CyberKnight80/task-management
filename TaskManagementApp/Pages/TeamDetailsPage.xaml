@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TaskManagement.Infrastructure.ViewModels;assembly=TaskManagement.Infrastructure"
+             xmlns:helpers="clr-namespace:TaskManagement.Infrastructure.Helpers;assembly=TaskManagement.Infrastructure"
+             x:Class="TaskManagementApp.Pages.TeamDetailsPage"
+             x:DataType="vm:TeamDetailsViewModel"
+             Title="{Binding Team.Name}">
+    <Grid Padding="20"
+          RowDefinitions="Auto, *, Auto">
+
+        <Label Text="Members:"
+               FontAttributes="Bold"
+               Margin="10" />
+
+        <ScrollView Grid.Row="1" VerticalOptions="StartAndExpand">
+            <CollectionView ItemsSource="{Binding Members}"
+                            EmptyView="No users"
+                            SelectionMode="None">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="helpers:IndexedListItem">
+                        <Grid Padding="10"
+                              ColumnDefinitions="30, *">
+
+                            <Grid.Triggers>
+                                <DataTrigger TargetType="Grid"
+                                             Binding="{Binding IsEven}"
+                                             Value="False">
+                                    <Setter Property="BackgroundColor"
+                                            Value="LightGray" />
+                                </DataTrigger>
+                            </Grid.Triggers>
+
+                            <Label
+                                HorizontalOptions="Center"
+                                Text="{Binding Index, StringFormat='{0}.'}" />
+                            <Label
+                                Grid.Column="1"
+                                Text="{Binding Name}" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+
+        <Button Grid.Row="2"
+                Text="Join"
+                VerticalOptions="End"
+                Margin="10"
+                TextColor="White"
+                Command="{Binding JoinLeaveCommand}"
+                BackgroundColor="Green">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button"
+                             Binding="{Binding HasMembership}"
+                             Value="True">
+                     <Setter Property="BackgroundColor" Value="Red" />
+                     <Setter Property="Text" Value="Leave" />
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+    </Grid>
+</ContentPage>

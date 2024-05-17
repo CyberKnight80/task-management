@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using TaskManagement.Infrastructure.DataContracts;
 
@@ -22,6 +23,8 @@ public class ApiClientService
         _serverAddress = $"{serverAddress}/api";
 
     }
+
+    #region Auth
 
     public async Task<LoginResponse> LoginAsync(string username, string password,
         CancellationToken cancellationToken = default)
@@ -90,25 +93,23 @@ public class ApiClientService
                 },
                 cancellationToken);
 
-        if (response.IsSuccessStatusCode)
-        {
-            var responseContent = await response.Content
-                .ReadFromJsonAsync<RefreshTokenResponse>(
-                    cancellationToken: cancellationToken);
-
-            if (responseContent == null)
-            {
-                throw new JsonException("Response has unknown format");
-            }
-
-            return responseContent;
-        }
-        else
+        if (!response.IsSuccessStatusCode)
         {
             throw new HttpRequestException(
                 $"Refresh token fails: {response.ReasonPhrase}", null,
                 response.StatusCode);
         }
+
+        var responseContent = await response.Content
+            .ReadFromJsonAsync<RefreshTokenResponse>(
+                cancellationToken: cancellationToken);
+
+        if (responseContent == null)
+        {
+            throw new JsonException("Response has unknown format");
+        }
+
+        return responseContent;
     }
 
     public async Task<bool> ValidateTokenAsync(
@@ -144,5 +145,111 @@ public class ApiClientService
 
         return true;
     }
+
+    #endregion
+
+    #region Teams
+
+    public async Task<IEnumerable<TeamEntity>> GetTeamsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClientFactory
+            .CreateClient(AutorizedHttpClient)
+            .GetAsync($"{_serverAddress}/teams", cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(
+                $"Get teams request fails: {response.ReasonPhrase}", null,
+                response.StatusCode);
+        }
+
+        var responseContent = await response.Content
+            .ReadFromJsonAsync<IEnumerable<TeamEntity>>(
+                cancellationToken: cancellationToken);
+
+        if (responseContent == null)
+        {
+            throw new JsonException("Response has unknown format");
+        }
+
+        return responseContent;
+    }
+
+    public async Task<GetTeamResponse> GetTeamAsync(int teamId,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClientFactory
+            .CreateClient(AutorizedHttpClient)
+            .GetAsync($"{_serverAddress}/teams/{teamId}", cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(
+                $"Get team request fails: {response.ReasonPhrase}", null,
+                response.StatusCode);
+        }
+
+        return await ParseGetTeamResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<GetTeamResponse> AddUserToTeamAsync(int teamId,
+        int userId, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClientFactory
+            .CreateClient(AutorizedHttpClient)
+            .PostAsync($"{_serverAddress}/teams/{teamId}/users/{userId}",
+                null, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(
+                $"Add user to team request fails: {response.ReasonPhrase}",
+                null, response.StatusCode);
+        }
+
+        return await ParseGetTeamResponseAsync(response, cancellationToken);
+    }
+
+    public async Task<GetTeamResponse> RemoveUserFromTeamAsync(int teamId,
+        int userId, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClientFactory
+            .CreateClient(AutorizedHttpClient)
+            .DeleteAsync($"{_serverAddress}/teams/{teamId}/users/{userId}",
+                cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(
+                $"Remove user from team request fails: {response.ReasonPhrase}",
+                null, response.StatusCode);
+        }
+
+        return await ParseGetTeamResponseAsync(response, cancellationToken);
+    }
+
+    private async Task<GetTeamResponse> ParseGetTeamResponseAsync(
+        HttpResponseMessage? response,
+        CancellationToken cancellationToken = default)
+    {
+        if (response is null)
+        {
+            throw new ArgumentNullException(nameof(response));
+        }
+
+        var responseContent = await response.Content
+            .ReadFromJsonAsync<GetTeamResponse>(
+                cancellationToken: cancellationToken);
+
+        if (responseContent == null)
+        {
+            throw new JsonException("Response has unknown format");
+        }
+
+        return responseContent;
+    }
+
+    #endregion
 }
 

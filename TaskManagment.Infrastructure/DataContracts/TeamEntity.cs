@@ -1,6 +1,6 @@
 ﻿namespace TaskManagement.Infrastructure.DataContracts;
 
-public class UserEntity
+public class TeamEntity
 {
     public int Id { get; set; }
 

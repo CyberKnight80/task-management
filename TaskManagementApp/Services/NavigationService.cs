@@ -32,6 +32,8 @@ internal static class RouteExtensions
         Route.Login => "login",
         Route.Register => "register",
         Route.Welcome => "welcome",
+        Route.Teams => "teams",
+        Route.TeamDetails => "teamDetails",
         _ => throw new NotSupportedException($"Route {route} is not supported")
     };
 }

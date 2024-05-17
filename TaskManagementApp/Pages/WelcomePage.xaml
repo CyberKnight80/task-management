@@ -5,10 +5,6 @@
              xmlns:vm="clr-namespace:TaskManagement.Infrastructure.ViewModels;assembly=TaskManagement.Infrastructure"
              Title="WelcomePage"
              x:DataType="vm:WelcomeViewModel">
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Log Out"
-                     Command="{Binding LogoutCommand}" />
-    </ContentPage.ToolbarItems>
     <VerticalStackLayout>
         <Label 
             Text="Welcome to Task Management App"

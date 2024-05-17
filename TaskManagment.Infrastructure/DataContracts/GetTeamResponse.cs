@@ -1,12 +1,7 @@
-﻿
-namespace TaskManagement.Infrastructure.DataContracts;
+﻿namespace TaskManagement.Infrastructure.DataContracts;
 
-public class GetTeamResponse
+public class GetTeamResponse : TeamEntity
 {
-    public int Id { get; set; }
-
-    public string Name { get; set; }
-
     public IEnumerable<UserEntity> Users { get; set; }
 }
 

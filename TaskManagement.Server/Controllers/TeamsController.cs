@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Infrastructure.DataContracts;
@@ -21,10 +22,9 @@ public class TeamsController : ControllerBase
 
     // GET: api/Teams
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetTeamResponse>>> GetTeams()
+    public async Task<ActionResult<IEnumerable<TeamEntity>>> GetTeams()
     {
         var teams = await _context.Teams
-            .Include(t => t.Users)
             .Select(t => MapModelToContract(t))
             .ToListAsync();
 
@@ -35,7 +35,9 @@ public class TeamsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<GetTeamResponse>> GetTeam(int id)
     {
-        var team = await _context.Teams.FindAsync(id);
+        var team = await _context.Teams
+            .Include(t => t.Users)
+            .FirstOrDefaultAsync(t => t.Id == id);
 
         if (team == null)
         {
@@ -165,8 +167,9 @@ public class TeamsController : ControllerBase
         return Ok(MapModelToContract(team));
     }
 
-    private static GetTeamResponse MapModelToContract(Team team) =>
-        new GetTeamResponse
+    private static GetTeamResponse MapModelToContract(Team team)
+    {
+        var contractData = new GetTeamResponse
         {
             Id = team.Id,
             Name = team.Name,
@@ -176,4 +179,8 @@ public class TeamsController : ControllerBase
                 Name = u.Username
             })
         };
+
+        return contractData;
+    }
+        
 }
