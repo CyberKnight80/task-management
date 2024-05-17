@@ -95,7 +95,7 @@ namespace TaskManagementWin
                 {
                     var logger = provider.GetRequiredService<ILogger<ApiClientService>>();
                     var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
-                    return new (logger, httpClientFactory, "http://localhost:5223");
+                    return new (logger, httpClientFactory, "http://localhost:7071");
                 })
                 .AddHttpClient();
 

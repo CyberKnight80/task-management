@@ -45,7 +45,12 @@ public static class MauiProgram
             {
                 var logger = provider.GetRequiredService<ILogger<ApiClientService>>();
                 var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
-                return new (logger, httpClientFactory, "http://10.0.2.2:5223");
+
+#if WINDOWS
+                return new(logger, httpClientFactory, "http://127.0.0.1:7071"); 
+#elif ANDROID
+                return new(logger, httpClientFactory, "http://10.0.2.2:7071"); // specify for real android phone manually
+#endif
             })
             .AddHttpClient();
 
