@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Windows;
-using System.Windows.Navigation;
 using TaskManagement.Infrastructure.ViewModels;
 using TaskManagement.Infrastructure.Services;
 using TaskManagementWin.Services;
@@ -30,9 +29,6 @@ namespace TaskManagementWin
                     services
                         .RegisterServices()
                         .RegisterViewModels();
-
-                    // navigation window
-                    services.AddSingleton<NavigationWindow>();
                 })
                 .Build();
 
@@ -45,16 +41,7 @@ namespace TaskManagementWin
 
             await _host.StartAsync();
 
-            var navigationWidnow = Services.GetRequiredService<NavigationWindow>();
-            navigationWidnow.Width = 400;
-            navigationWidnow.Height = 600;
-            navigationWidnow.Title = "Task Management App";
-
-            MainWindow = navigationWidnow;
-
             await SetStartupPageAsync();
-
-            MainWindow.Show();
         }
 
         protected override async void OnExit(ExitEventArgs e)
@@ -87,7 +74,7 @@ namespace TaskManagementWin
         internal static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services
-                .AddSingleton<INavigationService, Services.NavigationService>()
+                .AddSingleton<INavigationService, NavigationService>()
                 .AddSingleton<ISecureStorageService, SecureStorageService>()
                 .AddSingleton<IAuthenticationService, AuthenticationService>()
                 .AddSingleton<RefreshTokenHandler>()

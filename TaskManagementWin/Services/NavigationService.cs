@@ -10,18 +10,18 @@ namespace TaskManagementWin.Services;
 
 internal class NavigationService : INavigationService
 {
-    private readonly System.Windows.Navigation.NavigationService _navigationService;
-
-    public NavigationService(NavigationWindow navigationWindow)
+    public NavigationService()
     {
-        _navigationService = navigationWindow.NavigationService;
     }
+
+    private NavigationWindow NavigationWindow => App.Current.MainWindow as NavigationWindow ?? 
+        throw new NotSupportedException("Main window should be navigation window");
 
     public Task GoBackAsync()
     {
-        if (_navigationService.CanGoBack)
+        if (NavigationWindow.CanGoBack)
         {
-            _navigationService.GoBack();
+            NavigationWindow.GoBack();
         }
 
         return Task.CompletedTask;
@@ -32,13 +32,13 @@ internal class NavigationService : INavigationService
         if (!keepHistory)
         {
             // don't work - there is still exist the back button
-            while (_navigationService.CanGoBack)
+            while (NavigationWindow.CanGoBack)
             {
-                _navigationService.RemoveBackEntry();
+                NavigationWindow.RemoveBackEntry();
             }
         }
 
-        _navigationService.Navigate(MapRouteToPage(route, parameters));
+        NavigationWindow.Navigate(MapRouteToPage(route, parameters));
 
         return Task.CompletedTask;
     }
