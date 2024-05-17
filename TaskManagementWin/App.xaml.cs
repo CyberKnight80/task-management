@@ -9,6 +9,7 @@ using TaskManagementWin.Services;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
+using TaskManagementWin.ViewModels;
 
 namespace TaskManagementWin
 {
@@ -41,7 +42,11 @@ namespace TaskManagementWin
 
             await _host.StartAsync();
 
+            MainWindow = new MainWindow();
+
             await SetStartupPageAsync();
+
+            MainWindow.Show();
         }
 
         protected override async void OnExit(ExitEventArgs e)
@@ -95,8 +100,11 @@ namespace TaskManagementWin
         internal static IServiceCollection RegisterViewModels(this IServiceCollection services)
         {
             services
+                .AddTransient<MainMenuViewModel>()
                 .AddTransient<LoginViewModel>()
-                .AddTransient<RegisterViewModel>();
+                .AddTransient<RegisterViewModel>()
+                .AddTransient<TeamsViewModel>()
+                .AddTransient<TeamDetailsViewModel>();
 
             return services;
         }

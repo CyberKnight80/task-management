@@ -5,6 +5,7 @@ using System.Windows.Navigation;
 using TaskManagementWin.Pages;
 using TaskManagement.Infrastructure.Services;
 using System.Collections.Generic;
+using TaskManagement.Infrastructure.ViewModels;
 
 namespace TaskManagementWin.Services;
 
@@ -49,6 +50,8 @@ internal class NavigationService : INavigationService
         Route.Login => new LoginPage(),
         Route.Register => new RegisterPage(),
         Route.Welcome => new WelcomePage(),
+        Route.Teams => new TeamsPage(),
+        Route.TeamDetails => new TeamDetailsPage(int.Parse(parameters[TeamDetailsViewModel.TeamIdQueryKey].ToString())),
         _ => throw new NotSupportedException(),
     };
 #pragma warning restore CS8603 // Possible null reference return.
