@@ -1,8 +1,12 @@
-﻿namespace TaskManagement.Server.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskManagement.Server.Models;
 
 public class Task
 {
-    public int Id { get; set; } 
+    public int Id { get; set; }
+
+    [Required(ErrorMessage = "The Title field is required.")]
     public required string Title { get; set; } 
     public string? Description { get; set; }
 
@@ -12,6 +16,8 @@ public class Task
     public TaskStatus Status { get; set; } 
 
     public int OwnerId { get; set; }
+
+   
     public User Owner { get; set; }
 
     public int? AssignedUserId { get; set; }
