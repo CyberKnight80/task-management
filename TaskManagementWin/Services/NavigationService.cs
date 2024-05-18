@@ -5,23 +5,24 @@ using System.Windows.Navigation;
 using TaskManagementWin.Pages;
 using TaskManagement.Infrastructure.Services;
 using System.Collections.Generic;
+using TaskManagement.Infrastructure.ViewModels;
 
 namespace TaskManagementWin.Services;
 
 internal class NavigationService : INavigationService
 {
-    private readonly System.Windows.Navigation.NavigationService _navigationService;
-
-    public NavigationService(NavigationWindow navigationWindow)
+    public NavigationService()
     {
-        _navigationService = navigationWindow.NavigationService;
     }
+
+    private NavigationWindow NavigationWindow => App.Current.MainWindow as NavigationWindow ?? 
+        throw new NotSupportedException("Main window should be navigation window");
 
     public Task GoBackAsync()
     {
-        if (_navigationService.CanGoBack)
+        if (NavigationWindow.CanGoBack)
         {
-            _navigationService.GoBack();
+            NavigationWindow.GoBack();
         }
 
         return Task.CompletedTask;
@@ -32,13 +33,13 @@ internal class NavigationService : INavigationService
         if (!keepHistory)
         {
             // don't work - there is still exist the back button
-            while (_navigationService.CanGoBack)
+            while (NavigationWindow.CanGoBack)
             {
-                _navigationService.RemoveBackEntry();
+                NavigationWindow.RemoveBackEntry();
             }
         }
 
-        _navigationService.Navigate(MapRouteToPage(route, parameters));
+        NavigationWindow.Navigate(MapRouteToPage(route, parameters));
 
         return Task.CompletedTask;
     }
@@ -49,6 +50,8 @@ internal class NavigationService : INavigationService
         Route.Login => new LoginPage(),
         Route.Register => new RegisterPage(),
         Route.Welcome => new WelcomePage(),
+        Route.Teams => new TeamsPage(),
+        Route.TeamDetails => new TeamDetailsPage(int.Parse(parameters[TeamDetailsViewModel.TeamIdQueryKey].ToString())),
         _ => throw new NotSupportedException(),
     };
 #pragma warning restore CS8603 // Possible null reference return.

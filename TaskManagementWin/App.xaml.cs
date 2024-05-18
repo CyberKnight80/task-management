@@ -3,13 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Windows;
-using System.Windows.Navigation;
 using TaskManagement.Infrastructure.ViewModels;
 using TaskManagement.Infrastructure.Services;
 using TaskManagementWin.Services;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
+using TaskManagementWin.ViewModels;
 
 namespace TaskManagementWin
 {
@@ -30,9 +30,6 @@ namespace TaskManagementWin
                     services
                         .RegisterServices()
                         .RegisterViewModels();
-
-                    // navigation window
-                    services.AddSingleton<NavigationWindow>();
                 })
                 .Build();
 
@@ -45,12 +42,7 @@ namespace TaskManagementWin
 
             await _host.StartAsync();
 
-            var navigationWidnow = Services.GetRequiredService<NavigationWindow>();
-            navigationWidnow.Width = 400;
-            navigationWidnow.Height = 600;
-            navigationWidnow.Title = "Task Management App";
-
-            MainWindow = navigationWidnow;
+            MainWindow = new MainWindow();
 
             await SetStartupPageAsync();
 
@@ -87,7 +79,7 @@ namespace TaskManagementWin
         internal static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services
-                .AddSingleton<INavigationService, Services.NavigationService>()
+                .AddSingleton<INavigationService, NavigationService>()
                 .AddSingleton<ISecureStorageService, SecureStorageService>()
                 .AddSingleton<IAuthenticationService, AuthenticationService>()
                 .AddSingleton<RefreshTokenHandler>()
@@ -95,7 +87,7 @@ namespace TaskManagementWin
                 {
                     var logger = provider.GetRequiredService<ILogger<ApiClientService>>();
                     var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
-                    return new (logger, httpClientFactory, "http://localhost:5223");
+                    return new (logger, httpClientFactory, "http://localhost:7071");
                 })
                 .AddHttpClient();
 
@@ -108,8 +100,11 @@ namespace TaskManagementWin
         internal static IServiceCollection RegisterViewModels(this IServiceCollection services)
         {
             services
+                .AddTransient<MainMenuViewModel>()
                 .AddTransient<LoginViewModel>()
-                .AddTransient<RegisterViewModel>();
+                .AddTransient<RegisterViewModel>()
+                .AddTransient<TeamsViewModel>()
+                .AddTransient<TeamDetailsViewModel>();
 
             return services;
         }

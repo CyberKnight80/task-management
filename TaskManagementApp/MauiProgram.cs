@@ -3,6 +3,7 @@ using TaskManagement.Infrastructure.ViewModels;
 using TaskManagementApp.Services;
 using TaskManagement.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using TaskManagementApp.ViewModels;
 
 namespace TaskManagementApp;
 
@@ -45,7 +46,12 @@ public static class MauiProgram
             {
                 var logger = provider.GetRequiredService<ILogger<ApiClientService>>();
                 var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
-                return new (logger, httpClientFactory, "http://10.0.2.2:5223");
+
+#if WINDOWS
+                return new(logger, httpClientFactory, "http://127.0.0.1:7071"); 
+#elif ANDROID
+                return new(logger, httpClientFactory, "http://10.0.2.2:7071"); // specify for real android phone manually
+#endif
             })
             .AddHttpClient();
 
@@ -59,8 +65,12 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterViewModels(this MauiAppBuilder builder)
     {
         builder.Services
+            .AddTransient<AppShellViewModel>()
             .AddTransient<LoginViewModel>()
-            .AddTransient<RegisterViewModel>();
+            .AddTransient<RegisterViewModel>()
+            .AddTransient<WelcomeViewModel>()
+            .AddTransient<TeamsViewModel>()
+            .AddTransient<TeamDetailsViewModel>();
 
         return builder;
     }

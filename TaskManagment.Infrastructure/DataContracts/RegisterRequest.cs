@@ -1,5 +1,4 @@
-﻿using System;
-namespace TaskManagement.Infrastructure.DataContracts;
+﻿namespace TaskManagement.Infrastructure.DataContracts;
 
 public class RegisterRequest
 {

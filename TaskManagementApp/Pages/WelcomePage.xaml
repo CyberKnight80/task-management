@@ -2,7 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TaskManagementApp.Pages.WelcomePage"
-             Title="WelcomePage">
+             xmlns:vm="clr-namespace:TaskManagement.Infrastructure.ViewModels;assembly=TaskManagement.Infrastructure"
+             Title="WelcomePage"
+             x:DataType="vm:WelcomeViewModel">
     <VerticalStackLayout>
         <Label 
             Text="Welcome to Task Management App"

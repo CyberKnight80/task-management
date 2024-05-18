@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading;
+using Microsoft.Extensions.Logging;
 using TaskManagement.Infrastructure.Services;
 
 namespace TaskManagementApp;
@@ -61,5 +62,6 @@ public partial class App : Application
 
         await _navigationService.GoToAsync(startupRoute, keepHistory: false);
     }
+
 }
 

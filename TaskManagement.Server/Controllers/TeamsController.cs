@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TaskManagement.Infrastructure.DataContracts;
 using TaskManagement.Server.Models;
 using TaskManagement.Server.Services;
 
@@ -20,30 +22,34 @@ public class TeamsController : ControllerBase
 
     // GET: api/Teams
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
+    public async Task<ActionResult<IEnumerable<TeamEntity>>> GetTeams()
     {
-        return await _context.Teams
-            .Select(t => new Team { Id = t.Id, Name = t.Name })
+        var teams = await _context.Teams
+            .Select(t => MapModelToContract(t))
             .ToListAsync();
+
+        return teams;
     }
 
     // GET: api/Teams/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Team>> GetTeam(int id)
+    public async Task<ActionResult<GetTeamResponse>> GetTeam(int id)
     {
-        var team = await _context.Teams.FindAsync(id);
+        var team = await _context.Teams
+            .Include(t => t.Users)
+            .FirstOrDefaultAsync(t => t.Id == id);
 
         if (team == null)
         {
             return NotFound();
         }
 
-        return team;
+        return MapModelToContract(team);
     }
 
     // POST: api/Teams
     [HttpPost]
-    public async Task<ActionResult<Team>> PostTeam(Team Team)
+    public async Task<ActionResult<GetTeamResponse>> PostTeam(Team Team)
     {
         if (_context.Teams.Any(t => t.Name == Team.Name))
         {
@@ -59,7 +65,7 @@ public class TeamsController : ControllerBase
 
     // PUT: api/Teams/5
     [HttpPut("{id}")]
-    public async Task<ActionResult<Team>> PutTeam(int id, Team Team)
+    public async Task<ActionResult<GetTeamResponse>> PutTeam(int id, Team Team)
     {
         if (id != Team.Id)
         {
@@ -91,12 +97,12 @@ public class TeamsController : ControllerBase
             }
         }
 
-        return team;
+        return MapModelToContract(team);
     }
 
     // DELETE: api/Teams/5
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Team>> DeleteTeam(int id)
+    public async Task<ActionResult<GetTeamResponse>> DeleteTeam(int id)
     {
         var team = await _context.Teams.FindAsync(id);
         if (team == null)
@@ -107,6 +113,74 @@ public class TeamsController : ControllerBase
         _context.Teams.Remove(team);
         await _context.SaveChangesAsync();
 
-        return team;
+        return MapModelToContract(team);
     }
+
+    [HttpPost("{teamId}/users/{userId}")]
+    public async Task<ActionResult<GetTeamResponse>> AddUserToTeam(int teamId, int userId)
+    {
+        var team = await _context.Teams
+            .Include(t => t.Users)
+            .FirstOrDefaultAsync(t => t.Id == teamId);
+
+        if (team == null)
+        {
+            return NotFound($"Team with ID {teamId} not found.");
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return NotFound($"User with ID {userId} not found.");
+        }
+
+        if (!team.Users.Contains(user))
+        {
+            team.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
+        return Ok(MapModelToContract(team));
+    }
+
+    [HttpDelete("{teamId}/users/{userId}")]
+    public async Task<ActionResult<GetTeamResponse>> RemoveUserFromTeam(int teamId, int userId)
+    {
+        var team = await _context.Teams
+            .Include(t => t.Users)
+            .FirstOrDefaultAsync(t => t.Id == teamId);
+
+        if (team == null)
+        {
+            return NotFound($"Team with ID {teamId} not found.");
+        }
+
+        var user = team.Users.FirstOrDefault(u => u.Id == userId);
+        if (user == null)
+        {
+            return NotFound($"User with ID {userId} not found in team.");
+        }
+
+        team.Users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return Ok(MapModelToContract(team));
+    }
+
+    private static GetTeamResponse MapModelToContract(Team team)
+    {
+        var contractData = new GetTeamResponse
+        {
+            Id = team.Id,
+            Name = team.Name,
+            Users = team.Users.Select(u => new UserEntity
+            {
+                Id = u.Id,
+                Name = u.Username
+            })
+        };
+
+        return contractData;
+    }
+        
 }

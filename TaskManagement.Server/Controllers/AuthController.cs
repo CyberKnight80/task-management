@@ -140,5 +140,29 @@ public class AuthController : ControllerBase
 
         return Unauthorized();
     }
+
+    [Authorize]
+    [HttpGet("logout")]
+    public IActionResult Logout()
+    {
+        if (HttpContext.User.Identity is ClaimsIdentity identity)
+        {
+            var username = identity.FindFirst(ClaimTypes.Name)?.Value;
+            var user = _context.Users.SingleOrDefault(u => u.Username == username);
+
+            if (user is null)
+            {
+                return Unauthorized();
+            }
+
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = null;
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        return Unauthorized();
+    }
 }
 
