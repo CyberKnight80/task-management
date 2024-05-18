@@ -12,7 +12,7 @@ public class Task
     public TaskStatus Status { get; set; } 
 
     public int OwnerId { get; set; }
-    public required User Owner { get; set; }
+    public User Owner { get; set; }
 
     public int? AssignedUserId { get; set; }
     public User? AssignedUser { get; set; }
