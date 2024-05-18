@@ -1,4 +1,6 @@
-﻿namespace TaskManagement.Server.Models;
+﻿using TaskStatus = TaskManagement.Infrastructure.DataContracts.TaskStatus;
+
+namespace TaskManagement.Server.Models;
 
 public class Task
 {
@@ -11,7 +13,7 @@ public class Task
 
     public TaskStatus Status { get; set; } 
 
-    public int OwnerId { get; set; }
+    public required int OwnerId { get; set; }
     public User Owner { get; set; }
 
     public int? AssignedUserId { get; set; }
@@ -22,15 +24,5 @@ public class Task
     /// </summary>
     public int? TeamId { get; set; }
     public Team? Team { get; set; }
-}
-
-public enum TaskStatus
-{
-    New,
-    InProgress,
-    Completed,
-    OnHold,
-    Integrated,
-    Rejected,
 }
 
